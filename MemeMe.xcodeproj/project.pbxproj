@@ -14,6 +14,7 @@
 		0DCB2B6D1C9488220048F2AF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0DCB2B6B1C9488220048F2AF /* LaunchScreen.storyboard */; };
 		0DCB2B781C9488220048F2AF /* MemeMeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DCB2B771C9488220048F2AF /* MemeMeTests.swift */; };
 		0DCB2B831C9488220048F2AF /* MemeMeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DCB2B821C9488220048F2AF /* MemeMeUITests.swift */; };
+		0DCB2B911C9488B40048F2AF /* MemeMeStruct.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DCB2B901C9488B40048F2AF /* MemeMeStruct.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +48,7 @@
 		0DCB2B7E1C9488220048F2AF /* MemeMeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MemeMeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0DCB2B821C9488220048F2AF /* MemeMeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemeMeUITests.swift; sourceTree = "<group>"; };
 		0DCB2B841C9488220048F2AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0DCB2B901C9488B40048F2AF /* MemeMeStruct.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemeMeStruct.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,6 +105,7 @@
 				0DCB2B691C9488220048F2AF /* Assets.xcassets */,
 				0DCB2B6B1C9488220048F2AF /* LaunchScreen.storyboard */,
 				0DCB2B6E1C9488220048F2AF /* Info.plist */,
+				0DCB2B901C9488B40048F2AF /* MemeMeStruct.swift */,
 			);
 			path = MemeMe;
 			sourceTree = "<group>";
@@ -259,6 +262,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0DCB2B911C9488B40048F2AF /* MemeMeStruct.swift in Sources */,
 				0DCB2B651C9488220048F2AF /* ViewController.swift in Sources */,
 				0DCB2B631C9488220048F2AF /* AppDelegate.swift in Sources */,
 			);
