@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  MemeEditorViewController.swift
 //  MemeMe
 //
 //  Created by Lawrence Nyakiso on 2016/03/12.
@@ -9,7 +9,7 @@
 import UIKit
 import Foundation
 
-class ViewController: UIViewController, UIImagePickerControllerDelegate, UITextFieldDelegate, UINavigationControllerDelegate {
+class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegate, UITextFieldDelegate, UINavigationControllerDelegate {
     
 
     @IBOutlet weak var imageView: UIImageView!
@@ -21,9 +21,10 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UITextF
     var moveView:Bool = true
     
     let memeTextAtrributes:NSDictionary = [
-        NSForegroundColorAttributeName : UIColor(white: 1.0, alpha: 1.0),
+        NSForegroundColorAttributeName : UIColor.whiteColor(),
         NSFontAttributeName : UIFont(name: "HelveticaNeue-CondensedBlack", size: 20)!,
-        NSStrokeColorAttributeName : UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+        NSStrokeColorAttributeName : UIColor.blackColor(),
+        NSStrokeWidthAttributeName : -2
     ]
     
     override func viewDidLoad() {
@@ -40,7 +41,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UITextF
         bottomText.defaultTextAttributes = memeTextAtrributes as! [String : AnyObject]
         topText.textAlignment = NSTextAlignment.Center
         bottomText.textAlignment = NSTextAlignment.Center
-        
         imageView.clipsToBounds = true
         
     }
@@ -60,38 +60,35 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UITextF
         unSubscribeToKeyboardNotifications()
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
 
     @IBAction func imagePicker(sender: AnyObject) {
-        
-        let imagePicker = UIImagePickerController()
-        imagePicker.delegate = self
-        self.presentViewController(imagePicker, animated: true, completion: nil)
+        imagePickerActionHandler("album")
     }
 
     @IBAction func cameraPicker(sender: AnyObject) {
-        
-        //open view controller and select image
-        let cameraPhoto = UIImagePickerController()
-        cameraPhoto.sourceType = UIImagePickerControllerSourceType.Camera
-        cameraPhoto.delegate = self
-        self.presentViewController(cameraPhoto, animated: true, completion: nil)
+        imagePickerActionHandler("camera")
     }
-    
-    //DELEGATES
-    
-    //*Image picker delegate
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingImage image: UIImage, editingInfo: [String : AnyObject]?) {
         
-        imageView.image = squareImage(image)
+        imageView.image = image
         picker.dismissViewControllerAnimated(true, completion: nil)
         shareButton.enabled = true
+        
+    }
     
-        //zoom to crop image
+    func imagePickerActionHandler(pickerType:String){
+        
+        let pickerSource = UIImagePickerController()
+        pickerSource.delegate = self
+        
+        if(pickerType == "camera"){
+            pickerSource.sourceType = UIImagePickerControllerSourceType.Camera
+            presentViewController(pickerSource, animated:true, completion:nil)
+            
+        }else{
+            presentViewController(pickerSource, animated:true, completion:nil)
+        }
         
     }
     
@@ -106,24 +103,23 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UITextF
     }
     
     func textFieldDidBeginEditing(textField: UITextField) {
+
        //half the screen
-        let halfScreen = self.view.frame.height / 2
+        let halfScreen = view.frame.height / 2
         let textFieldPosition = textField.frame.origin.y - halfScreen
         if(textFieldPosition < 0){
             moveView = false
         }else{
             moveView = true
         }
-        
-        
     }
     
     
     //subscribe to notifications
     
     func subscribeToKeyboardNotifications(){
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillShow:", name: UIKeyboardWillShowNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillHide:", name: UIKeyboardWillHideNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(MemeEditorViewController.keyboardWillShow(_:)), name: UIKeyboardWillShowNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(MemeEditorViewController.keyboardWillHide(_:)), name: UIKeyboardWillHideNotification, object: nil)
     }
     
     //unSubscribe to notifications
@@ -136,15 +132,15 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UITextF
     func keyboardWillShow(notification:NSNotification){
         //only adjust for top text
         if(moveView){
-            if(self.view.frame.origin.y == 0.0){
-                self.view.frame.origin.y -= getKeyboardHeight(notification)
+            if(view.frame.origin.y == 0.0){
+                view.frame.origin.y -= getKeyboardHeight(notification)
             }
         }
     }
     
     func keyboardWillHide(notification:NSNotification){
         if(moveView){
-            self.view.frame.origin.y += getKeyboardHeight(notification)
+            view.frame.origin.y += getKeyboardHeight(notification)
         }
     }
     
@@ -180,42 +176,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UITextF
         
     }
     
-    func squareImage(image: UIImage) -> UIImage{
-        
-        //REF:http://code-tuts.net/crop-image-to-square/
-        //REF:http://nshipster.com/image-resizing/
-        
-        let cgiImage = image.CGImage!
-        let imageSize = image.size
-        //landscapre
-        let posX: CGFloat
-        let posY: CGFloat
-        let width: CGFloat
-        let height: CGFloat
-        
-        // Check to see which length is the longest and create the offset based on that length, then set the width and height of our rect
-        if imageSize.width > imageSize.height {
-            posX = ((imageSize.width - imageSize.height) / 2)
-            posY = 0
-            width = imageSize.height
-            height = imageSize.height
-        } else {
-            posX = 0
-            posY = ((imageSize.height - imageSize.width) / 2)
-            width = imageSize.width
-            height = imageSize.width
-        }
-        
-        //potrait or already square
-        
-        //CIG image context
-        let cropRec = CGRect(x: posX, y: posY, width: width, height: height)
-        
-        let cgiImageRef = CGImageCreateWithImageInRect(cgiImage, cropRec)!
-        let croppedImage = UIImage(CGImage: cgiImageRef, scale: image.scale, orientation: image.imageOrientation)
-        return croppedImage
-        
-    }
     
     //save
     
@@ -236,7 +196,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UITextF
         
         let shareController:UIActivityViewController = UIActivityViewController(activityItems: [memeToShare], applicationActivities: nil)
         
-        self.presentViewController(shareController, animated: true, completion: nil)
+        presentViewController(shareController, animated: true, completion: nil)
         
         shareController.completionWithItemsHandler = {
             
@@ -248,8 +208,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UITextF
             }
             
         }
-        
-        
         
     }
    
