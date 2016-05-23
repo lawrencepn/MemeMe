@@ -17,8 +17,11 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
     @IBOutlet weak var cameraButton: UIBarButtonItem!
     @IBOutlet weak var bottomText: UITextField!
     @IBOutlet weak var topText: UITextField!
-    @IBOutlet weak var toolbar: UIToolbar!
+    @IBOutlet weak var saveButton: UIBarButtonItem!
     var moveView:Bool = true
+
+    var meme = MemeMe?()
+    var previousView: String?
     
     let memeTextAtrributes:NSDictionary = [
         NSForegroundColorAttributeName : UIColor.whiteColor(),
@@ -43,7 +46,11 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         bottomText.textAlignment = NSTextAlignment.Center
         imageView.clipsToBounds = true
         
+        //disable root tabbar
+        tabBarController?.tabBar.hidden = true
+        
     }
+    
     
     override func prefersStatusBarHidden() -> Bool {
         return true
@@ -52,7 +59,6 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         subscribeToKeyboardNotifications()
-        
     }
     
     override func viewWillDisappear(animated: Bool) {
@@ -74,6 +80,8 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         imageView.image = image
         picker.dismissViewControllerAnimated(true, completion: nil)
         shareButton.enabled = true
+        
+        //enable save button
         
     }
     
@@ -171,22 +179,29 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         let memeImage:UIImage = UIGraphicsGetImageFromCurrentImageContext()
         
         UIGraphicsEndImageContext()
+        
         return memeImage
         //return image5
         
     }
     
     
-    //save
-    
-    func save(){
-        
+    //save meme to photo gallery
+    func saveMemeToPhotoGallery(){
         //save to struct
         let memeMe = MemeMe(topText: topText.text!, bottomText: bottomText.text!, origialImage: imageView.image!, memedImage: generateMemeMe())
         
         //save to ablbums
         UIImageWriteToSavedPhotosAlbum(memeMe.memedImage, nil, nil, nil)
+        
+        //imagedata
+        //let memeData : NSData = UIImagePNGRepresentation(memeMe.memedImage)!
+        
+        //save the meme to the MEME Array
+        meme = memeMe
+        
     }
+
     
     //share meme
     @IBAction func shareMeme(sender: AnyObject) {
@@ -203,13 +218,25 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
             (activity: String?, completed:Bool, items:[AnyObject]?, err:NSError?) -> Void in
             self.shareButton.enabled = true
             if(completed){
-                self.save()
-                self.dismissViewControllerAnimated(true, completion: nil)
+                self.saveMemeToPhotoGallery()
+                self.performSegueWithIdentifier(self.previousView!, sender: self)
             }
             
         }
         
     }
-   
+    
+    @IBAction func cancel(sender: UIBarButtonItem) {
+        dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+       
+        if (saveButton === sender){
+            saveMemeToPhotoGallery()
+        }
+    }
+    
 }
 
