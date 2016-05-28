@@ -20,6 +20,7 @@ class ViewStoredMemeController:  UIViewController, UINavigationControllerDelegat
         
         //hide tab bar
         tabBarController?.tabBar.hidden = true
+        memeView.clipsToBounds =  true
     }
     
     override func viewWillDisappear(animated: Bool) {

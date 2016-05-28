@@ -59,8 +59,10 @@ class SendMemesCollectionViewController: UIViewController, UICollectionViewDeleg
         
         //then assign
         let image = memeModel.storedMemes()[indexPath.row].memedImage
-        
-        cell.backgroundView = UIImageView(image: image)
+        let cellBackground = UIImageView(image: image)
+        cellBackground.contentMode = UIViewContentMode.ScaleAspectFit
+        cell.backgroundView = cellBackground
+
         
         return cell
     }

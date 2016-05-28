@@ -49,6 +49,7 @@ class MemeTableViewController: UITableViewController {
         let image = memeModel.storedMemes()[indexPath.row].memedImage
         
         let cellImg : UIImageView = UIImageView(frame: CGRectMake(0, 0, 90, 90))
+        cellImg.contentMode = UIViewContentMode.ScaleAspectFit
         cellImg.image = image
         cell.addSubview(cellImg)
         

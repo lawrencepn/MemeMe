@@ -44,6 +44,7 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         bottomText.defaultTextAttributes = memeTextAtrributes as! [String : AnyObject]
         topText.textAlignment = NSTextAlignment.Center
         bottomText.textAlignment = NSTextAlignment.Center
+        imageView.contentMode = UIViewContentMode.ScaleAspectFit
         imageView.clipsToBounds = true
         
         //disable root tabbar
@@ -162,27 +163,46 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
     //meme it
     func generateMemeMe() -> UIImage{
         
+        /**
+         Image is too large
+         Need to reduce size of image to size of imageview - width and use aspect to scale
+         **/
+        
         //get image
-        let image = imageView.image!
-    
+        let image = resizeImage(imageView.image!, refSize: imageView.frame.size)
         //begin new CIG image context
-        UIGraphicsBeginImageContextWithOptions(imageView.frame.size, false, 0.0)
+        UIGraphicsBeginImageContextWithOptions(image.size, false, 0.0)
         
         //draw resized image
-        let imageRec = CGRect(origin: CGPointZero, size: image.size)
-        imageView.drawRect(imageRec)
+        let origin = CGPoint(x: 0.0, y: 0.0)
+        let imageRec = CGRect(origin: origin, size: image.size)
+        
+        image.drawInRect(imageRec)
 
         //draw in the text
         topText.drawTextInRect(CGRect(x: (imageView.frame.width - topText.frame.width) / 2, y:4.0, width: topText.frame.width, height: topText.frame.height))
-        bottomText.drawTextInRect(CGRect(x: (imageView.frame.width - topText.frame.width) / 2, y:imageView.frame.height - topText.frame.height, width: topText.frame.width, height: topText.frame.height))
+        bottomText.drawTextInRect(CGRect(x: (imageView.frame.width - topText.frame.width) / 2, y:image.size.height - topText.frame.height, width: topText.frame.width, height: topText.frame.height))
         
         let memeImage:UIImage = UIGraphicsGetImageFromCurrentImageContext()
         
         UIGraphicsEndImageContext()
         
         return memeImage
-        //return image5
+    }
+    
+    func resizeImage(image:UIImage, refSize: CGSize) -> UIImage{
         
+        let aspectValue = refSize.width / image.size.width
+        let scaledWidth = image.size.width * aspectValue
+        let scaledHeight = image.size.height * aspectValue
+        
+        //protrait
+            
+        UIGraphicsBeginImageContext(CGSizeMake(scaledWidth, scaledHeight))
+        image.drawInRect(CGRectMake(0, 0, scaledWidth, scaledHeight))
+        let scaledImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return scaledImage
     }
     
     
